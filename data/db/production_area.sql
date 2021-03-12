@@ -1,5 +1,6 @@
 BEGIN TRANSACTION;
 PRAGMA user_version = 1;
+PRAGMA foreign_keys = ON;
 
 -- production tables
 CREATE TABLE IF NOT EXISTS "customer" (
@@ -30,7 +31,10 @@ CREATE TABLE IF NOT EXISTS "login"(
 	"customer_id" TEXT NOT NULL,
 	"website" TEXT NOT NULL,
 	"timestamp" DATETIME NOT NULL,
-	FOREIGN KEY ("customer_id") REFERENCES "customer"("id"),
+	FOREIGN KEY ("customer_id") 
+		REFERENCES "customer"("id") 
+			ON UPDATE CASCADE
+			ON DELETE CASCADE,
 	PRIMARY KEY ("id", AUTOINCREMENT)
 );
 
@@ -40,7 +44,10 @@ CREATE TABLE IF NOT EXISTS "registration"(
 	"dateofregistration" DATETIME NOT NULL,
 	"customer_id" TEXT NOT NULL,
 	PRIMARY KEY ("id", AUTOINCREMENT),
-	FOREIGN KEY ("customer_id") REFERENCES "customer"("id")
+	FOREIGN KEY ("customer_id")
+		REFERENCES "customer"("id")
+			ON UPDATE CASCADE
+			ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "product"(
@@ -61,9 +68,18 @@ CREATE TABLE IF NOT EXISTS "ticket"(
 	"fee" REAL DEFAULT 0.0,
 	"discount_id" INTEGER NOT NULL,	
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("customer_id") REFERENCES "customer"("id"),
-	FOREIGN KEY ("product_id") REFERENCES "product"("id")
-	FOREIGN KEY ("discount_id") REFERENCES "discount"("id")
+	FOREIGN KEY ("customer_id")
+		REFERENCES "customer"("id")
+			ON UPDATE CASCADE
+			ON DELETE CASCADE,
+	FOREIGN KEY ("product_id")
+		REFERENCES "product"("id")
+			ON UPDATE CASCADE
+			ON DELETE CASCADE,
+	FOREIGN KEY ("discount_id")
+		REFERENCES "discount"("id")
+			ON UPDATE CASCADE
+			ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "booking"(
@@ -76,65 +92,17 @@ CREATE TABLE IF NOT EXISTS "booking"(
 	"price" REAL DEFAULT 0.0,
 	"fee" REAL DEFAULT 0.0,
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("customer_id") REFERENCES "customer"("id"),
-	FOREIGN KEY ("product_id") REFERENCES "product"("id")
+	FOREIGN KEY ("customer_id")
+		REFERENCES "customer"("id")
+			ON UPDATE CASCADE
+			ON DELETE CASCADE,
+	FOREIGN KEY ("product_id")
+		REFERENCES "product"("id")
+			ON UPDATE CASCADE
+			ON DELETE CASCADE
 );
 
--- triggers
+-- views
 
-CREATE TRIGGER IF NOT EXISTS "delete_customer_logins"
-	AFTER DELETE ON "customer_logins_clean"
-BEGIN
-		UPDATE customer_logins_clean SET audittime = datetime('now');
-END;
-
-CREATE TRIGGER IF NOT EXISTS "delete_customer_registrations"
-	AFTER DELETE ON "customer_registration_clean"
-BEGIN
-		UPDATE customer_registration_clean SET audittime = datetime('now');
-END;
-
-CREATE TRIGGER IF NOT EXISTS "delete_games_purchase"
-	AFTER DELETE ON "games_purchase_clean"
-BEGIN
-		UPDATE games_purchase_clean SET audittime = datetime('now');
-END;
-
-CREATE TRIGGER IF NOT EXISTS "delete_lottery_purchase"
-	AFTER DELETE ON "lottery_purchase_clean"
-BEGIN
-		UPDATE lottery_purchase_clean SET audittime = datetime('now');
-END;
-
-CREATE TRIGGER IF NOT EXISTS "update_customer_logins"
-	AFTER UPDATE ON "customer_logins_clean"
-BEGIN
-		UPDATE customer_logins_clean SET audittime = DATETIME('now') WHERE OLD.customer_id = NEW.customer_id;
-END;
-
-CREATE TRIGGER IF NOT EXISTS "update_customer_registrations"
-	AFTER UPDATE ON "customer_registration_clean"
-BEGIN
-		UPDATE customer_registration_clean SET audittime = DATETIME('now') WHERE OLD.customernumber = NEW.customernumber;
-END;
-
-CREATE TRIGGER IF NOT EXISTS "update_games_purchase"
-	AFTER UPDATE ON "games_purchase_clean"
-BEGIN
-		UPDATE games_purchase_clean SET audittime = DATETIME('now') WHERE OLD.ticketexternalid = NEW.ticketexternalid;
-END;
-
-CREATE TRIGGER IF NOT EXISTS "update_lottery_purchase"
-	AFTER UPDATE ON "lottery_purchase_clean"
-BEGIN
-		UPDATE lottery_purchase_clean SET audittime = DATETIME('now') WHERE OLD.ticketid = NEW.ticketid;
-END;
-
--- constrains
-
-CREATE INDEX customer_logins_idx ON customer_logins_clean (audittime);
-CREATE INDEX customer_registration_idx ON customer_registration_clean (audittime);
-CREATE INDEX games_purchase_idx ON games_purchase_clean (audittime);
-CREATE INDEX lottery_purchase_idx ON lottery_purchase_clean (audittime);
 
 COMMIT;
