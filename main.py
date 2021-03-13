@@ -3,22 +3,37 @@
 """Main scriptfor the case study."""
 
 from src import setup_logging
-from src.init_dbs import init_database, validate_folder_and_files, 
+from src import init_dbs
+from src import qa_staging 
 from settings import db_staging_file, db_production_file, schema_staging_file,\
     schema_production_file, headers_dict
 import os
+import sqlite3
 
 
 def main():
     logger.info('Begin ETL process.')
-    init_database(db_staging_file, schema_staging_file)
-    init_database(db_production_file, schema_production_file)
-    file_paths = validate_folder_and_files('data/input')
-    for file_path in file_paths:
-        for k, v in headers_dict:
-            if k in file_path:
-                if 
-
+    init_dbs.init_database(db_staging_file, schema_staging_file)
+    init_dbs.init_database(db_production_file, schema_production_file)
+    file_paths = init_dbs.validate_folder_and_files('data/input')
+    file_path_dict = init_dbs.validate_file_header(file_paths, headers_dict)
+    
+    logger.info('Load content into *_stg tables begin.')
+    for table_name, files in file_path_dict.items():
+        for file_path in files:
+            init_dbs.load_file_in_staging(file_path,
+                                          table_name,
+                                          db_staging_file)   
+    
+    logger.info('Initialize data QA and transfer to *_clean tables.')
+    qa_staging.update_audit_table(db_staging_file)
+    
+    qa_staging.run_qa_logins(db_staging_file) 
+    qa_staging.run_qa_registration(db_staging_file)
+    qa_staging.run_qa_games(db_staging_file)
+    qa_staging.run_qa_lottery(db_staging_file)       
+    logger.info('Initialize data transfer to production.')
+            
 
 if __name__ == "__main__":
     logger = setup_logging(logFile='etl-info.log', level='info')

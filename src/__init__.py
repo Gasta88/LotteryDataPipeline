@@ -48,3 +48,4 @@ def setup_logging(logFile=None, cmdline=True, level='info'):
         logger.debug('Set up file logging: ' + logFile)
 
     return logger
+

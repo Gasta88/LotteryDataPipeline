@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS "discount"(
 	"category" TEXT NOT NULL,
 	"value" REAL NOT NULL,
 	"type" TEXT NOT NULL,
-	PRIMARY KEY ("id", AUTOINCREMENT)
+	PRIMARY KEY ("id" AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS "login"(
@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS "login"(
 	FOREIGN KEY ("customer_id") 
 		REFERENCES "customer"("id") 
 			ON UPDATE CASCADE
-			ON DELETE CASCADE,
-	PRIMARY KEY ("id", AUTOINCREMENT)
+			ON DELETE SET NULL, -- maintain login history of inactive customers
+	PRIMARY KEY ("id" AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS "registration"(
@@ -43,63 +43,56 @@ CREATE TABLE IF NOT EXISTS "registration"(
 	"website" TEXT NOT NULL,
 	"dateofregistration" DATETIME NOT NULL,
 	"customer_id" TEXT NOT NULL,
-	PRIMARY KEY ("id", AUTOINCREMENT),
+	PRIMARY KEY ("id" AUTOINCREMENT),
 	FOREIGN KEY ("customer_id")
 		REFERENCES "customer"("id")
 			ON UPDATE CASCADE
-			ON DELETE CASCADE
+			ON DELETE SET NULL -- leaving customers are inactive
 );
 
 CREATE TABLE IF NOT EXISTS "product"(
 	"id" INTEGER NOT NULL UNIQUE,
-	"type" TEXT DEFAULT "NA",
 	"name" TEXT NOT NULL,
-	"currency" TEXT "EUR",
-	PRIMARY KEY ("id", AUTOINCREMENT)
+	"type" TEXT NOT NULL, -- either lottery or instant game
+	PRIMARY KEY ("id" AUTOINCREMENT)
 );
 
+
 CREATE TABLE IF NOT EXISTS "ticket"(
-	"id" INTEGER NOT NULL UNIQUE,
-	"customer_id" TEXT NOT NULL,
-	"product_id" INTEGER NOT NULL,
+	"id" TEXT NOT NULL UNIQUE,  --ticket_id for lottery, ??? for games
+	"product_id" TEXT NOT NULL,
 	"betindex" INTEGER NOT NULL,
-	"website" TEXT NOT NULL,
+	"currency"	TEXT NULL,
 	"price" REAL DEFAULT 0.0,
 	"fee" REAL DEFAULT 0.0,
 	"discount_id" INTEGER NOT NULL,	
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("customer_id")
-		REFERENCES "customer"("id")
-			ON UPDATE CASCADE
-			ON DELETE CASCADE,
 	FOREIGN KEY ("product_id")
 		REFERENCES "product"("id")
 			ON UPDATE CASCADE
-			ON DELETE CASCADE,
+			ON DELETE CASCADE, -- discontinued products invalidate tickets
 	FOREIGN KEY ("discount_id")
 		REFERENCES "discount"("id")
 			ON UPDATE CASCADE
-			ON DELETE CASCADE
+			ON DELETE SET NULL 
 );
 
+
 CREATE TABLE IF NOT EXISTS "booking"(
-	"id" INTEGER NOT NULL UNIQUE,
+	"order_id" TEXT NOT NULL,
 	"customer_id" TEXT NOT NULL,
+	"ticket_id" TEXT NOT NULL,
 	"timestamp" DATETIME NOT NULL,
 	"website" TEXT NOT NULL,
-	"product_id" INTEGER NOT NULL,
-	"aggregationkey" TEXT NOT NULL,
-	"price" REAL DEFAULT 0.0,
-	"fee" REAL DEFAULT 0.0,
-	PRIMARY KEY ("id"),
+	UNIQUE ("order_id", "customer_id", "product_id", "timestamp"),
 	FOREIGN KEY ("customer_id")
 		REFERENCES "customer"("id")
 			ON UPDATE CASCADE
-			ON DELETE CASCADE,
-	FOREIGN KEY ("product_id")
-		REFERENCES "product"("id")
+			ON DELETE CASCADE, -- inactive customers do not maintain their booking history
+	FOREIGN KEY ("ticket_id")
+		REFERENCES "ticket"("id")
 			ON UPDATE CASCADE
-			ON DELETE CASCADE
+			ON DELETE CASCADE -- discontinued tickets invalidate products
 );
 
 -- views

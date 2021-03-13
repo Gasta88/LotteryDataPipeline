@@ -1,0 +1,67 @@
+2021-03-13 16:58:05,573: [INFO]: main.py in main (14): Begin ETL process.
+2021-03-13 16:58:05,589: [INFO]: init_dbs.py in validate_folder_and_files (28): Found 8 files to import.
+2021-03-13 16:58:05,605: [INFO]: init_dbs.py in validate_file_header (55): 8 files with valid headers.
+2021-03-13 16:58:05,613: [INFO]: main.py in main (20): Load content into *_stg tables begin.
+2021-03-13 16:58:18,676: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerlogins.csv into customer_logins_stg.
+2021-03-13 16:58:41,553: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 9515715 rows.
+2021-03-13 16:58:42,761: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_01.csv into customer_registration_stg.
+2021-03-13 16:58:43,660: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 99944 rows.
+2021-03-13 16:58:44,501: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_02.csv into customer_registration_stg.
+2021-03-13 16:58:45,287: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 100214 rows.
+2021-03-13 16:58:47,607: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_03.csv into customer_registration_stg.
+2021-03-13 16:58:49,570: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 280697 rows.
+2021-03-13 16:58:53,346: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_04.csv into customer_registration_stg.
+2021-03-13 16:58:56,664: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 479507 rows.
+2021-03-13 16:58:57,080: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_05.csv into customer_registration_stg.
+2021-03-13 16:58:57,584: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 39852 rows.
+2021-03-13 16:59:10,873: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\instantgamespurchases.csv into games_purchase_stg.
+2021-03-13 16:59:44,391: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5102610 rows.
+2021-03-13 16:59:57,572: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+to customer_logins_stg.
+2021-03-13 16:58:41,553: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 9515715 rows.
+2021-03-13 16:58:42,761: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_01.csv into customer_registration_stg.
+2021-03-13 16:58:43,660: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 99944 rows.
+2021-03-13 16:58:44,501: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_02.csv into customer_registration_stg.
+2021-03-13 16:58:45,287: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 100214 rows.
+2021-03-13 16:58:47,607: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_03.csv into customer_registration_stg.
+2021-03-13 16:58:49,570: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 280697 rows.
+2021-03-13 16:58:53,346: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_04.csv into customer_registration_stg.
+2021-03-13 16:58:56,664: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 479507 rows.
+2021-03-13 16:58:57,080: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\customerregistration_05.csv into customer_registration_stg.
+2021-03-13 16:58:57,584: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 39852 rows.
+2021-03-13 16:59:10,873: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\instantgamespurchases.csv into games_purchase_stg.
+2021-03-13 16:59:44,391: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5102610 rows.
+2021-03-13 16:59:57,572: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+): Imported 39852 rows.
+2021-03-13 16:59:10,873: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\instantgamespurchases.csv into games_purchase_stg.
+2021-03-13 16:59:44,391: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5102610 rows.
+2021-03-13 16:59:57,572: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+): Imported 39852 rows.
+2021-03-13 16:59:10,873: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\instantgamespurchases.csv into games_purchase_stg.
+2021-03-13 16:59:44,391: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5102610 rows.
+2021-03-13 16:59:57,572: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+.csv into games_purchase_stg.
+2021-03-13 16:59:44,391: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5102610 rows.
+2021-03-13 16:59:57,572: [INFO]: init_dbs.py in load_file_in_staging (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ (78): Uploading data/input\lotterygamespurchases.csv into lottery_purchase_stg.
+2021-03-13 17:00:31,027: [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
+ [INFO]: init_dbs.py in load_file_in_staging (82): Imported 5099164 rows.
