@@ -18,6 +18,21 @@ def init_database(db_file, schema_file):
         with sqlite3.connect(db_file) as conn:
             with open(schema_file, 'r') as schema:
                 conn.executescript(schema.read())
+    else:
+        logger.debug('Cleaning *_stg and *_qrtn tables')
+        with sqlite3.connect(db_file) as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM customer_logins_stg;")
+            cur.execute("DELETE FROM customer_registration_stg;")
+            cur.execute("DELETE FROM games_purchase_stg;")
+            cur.execute("DELETE FROM lottery_purchase_stg;")
+            cur.execute("DELETE FROM customer_logins_qrtn;")
+            cur.execute("DELETE FROM customer_registration_qrtn;")
+            cur.execute("DELETE FROM games_purchase_qrtn;")
+            cur.execute("DELETE FROM lottery_purchase_qrtn;")
+            cur.execute("DELETE FROM audit_events;")
+            conn.commit()
+    return
                 
 
 def validate_folder_and_files(folder):
@@ -74,11 +89,12 @@ def validate_file_header(files, headers):
 def load_file_in_staging(file_path, table_name, db_file):
     """Load content of file inside *_stg tables."""
     tmp_df = pd.read_table(file_path, header=0, sep=';', dtype='str',
-                           encoding='latin-1')
+                            encoding='latin-1')
     logger.info('Uploading {} into {}.'.format(file_path, table_name))
     with sqlite3.connect(db_file) as conn:
-         tmp_df.to_sql(table_name, conn, if_exists='replace', index=False)
-         conn.commit()
+         tmp_df.to_sql(table_name, conn, index=False, if_exists='append',
+                       chunksize=200000)
          logger.info('Imported {} rows.'.format(tmp_df.shape[0]))
          del tmp_df
+    return
 

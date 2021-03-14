@@ -4,7 +4,7 @@ PRAGMA foreign_keys = ON;
 
 -- production tables
 CREATE TABLE IF NOT EXISTS "customer" (
-	"id" TEXT NOT NULL UNIQUE,
+	"id" TEXT PRIMARY KEY,
 	"email" TEXT NOT NULL,
 	"dateofbirth" DATETIME NOT NULL,
 	"familyname" TEXT NULL,
@@ -14,36 +14,32 @@ CREATE TABLE IF NOT EXISTS "customer" (
 	"federalstate" TEXT NULL,
 	"postalcode" TEXT NULL,
 	"sovereignstate" TEXT NULL,
-	"street" TEXT NULL,
-	PRIMARY KEY ("id")
+	"street" TEXT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "discount"(
-	"id" INTEGER NOT NULL UNIQUE,
+	"id" INTEGER PRIMARY KEY,
 	"category" TEXT NOT NULL,
 	"value" REAL NOT NULL,
-	"type" TEXT NOT NULL,
-	PRIMARY KEY ("id" AUTOINCREMENT)
+	"type" TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "login"(
-	"id" INTEGER NOT NULL UNIQUE,
+	"id" INTEGER PRIMARY KEY,
 	"customer_id" TEXT NOT NULL,
 	"website" TEXT NOT NULL,
 	"timestamp" DATETIME NOT NULL,
 	FOREIGN KEY ("customer_id") 
 		REFERENCES "customer"("id") 
 			ON UPDATE CASCADE
-			ON DELETE SET NULL, -- maintain login history of inactive customers
-	PRIMARY KEY ("id" AUTOINCREMENT)
+			ON DELETE SET NULL -- maintain login history of inactive customers
 );
 
 CREATE TABLE IF NOT EXISTS "registration"(
-	"id" INTEGER NOT NULL UNIQUE,
+	"id" INTEGER PRIMARY KEY,
 	"website" TEXT NOT NULL,
 	"dateofregistration" DATETIME NOT NULL,
 	"customer_id" TEXT NOT NULL,
-	PRIMARY KEY ("id" AUTOINCREMENT),
 	FOREIGN KEY ("customer_id")
 		REFERENCES "customer"("id")
 			ON UPDATE CASCADE
@@ -51,22 +47,20 @@ CREATE TABLE IF NOT EXISTS "registration"(
 );
 
 CREATE TABLE IF NOT EXISTS "product"(
-	"id" INTEGER NOT NULL UNIQUE,
+	"id" INTEGER PRIMARY KEY,
 	"name" TEXT NOT NULL,
-	"type" TEXT NOT NULL, -- either lottery or instant game
-	PRIMARY KEY ("id" AUTOINCREMENT)
+	"type" TEXT NOT NULL -- either lottery or instant game
 );
 
 
 CREATE TABLE IF NOT EXISTS "ticket"(
-	"id" TEXT NOT NULL UNIQUE,  --ticket_id for lottery, ??? for games
+	"id" TEXT PRIMARY KEY,  
 	"product_id" TEXT NOT NULL,
 	"betindex" INTEGER NOT NULL,
 	"currency"	TEXT NULL,
 	"price" REAL DEFAULT 0.0,
 	"fee" REAL DEFAULT 0.0,
 	"discount_id" INTEGER NOT NULL,	
-	PRIMARY KEY ("id"),
 	FOREIGN KEY ("product_id")
 		REFERENCES "product"("id")
 			ON UPDATE CASCADE
@@ -84,7 +78,6 @@ CREATE TABLE IF NOT EXISTS "booking"(
 	"ticket_id" TEXT NOT NULL,
 	"timestamp" DATETIME NOT NULL,
 	"website" TEXT NOT NULL,
-	UNIQUE ("order_id", "customer_id", "product_id", "timestamp"),
 	FOREIGN KEY ("customer_id")
 		REFERENCES "customer"("id")
 			ON UPDATE CASCADE
