@@ -19,19 +19,20 @@ def init_database(db_file, schema_file):
             with open(schema_file, 'r') as schema:
                 conn.executescript(schema.read())
     else:
-        logger.debug('Cleaning *_stg and *_qrtn tables')
-        with sqlite3.connect(db_file) as conn:
-            cur = conn.cursor()
-            cur.execute("DELETE FROM customer_logins_stg;")
-            cur.execute("DELETE FROM customer_registration_stg;")
-            cur.execute("DELETE FROM games_purchase_stg;")
-            cur.execute("DELETE FROM lottery_purchase_stg;")
-            cur.execute("DELETE FROM customer_logins_qrtn;")
-            cur.execute("DELETE FROM customer_registration_qrtn;")
-            cur.execute("DELETE FROM games_purchase_qrtn;")
-            cur.execute("DELETE FROM lottery_purchase_qrtn;")
-            cur.execute("DELETE FROM audit_events;")
-            conn.commit()
+        if 'staging' in db_file:
+            logger.debug('Cleaning *_stg and *_qrtn tables')
+            with sqlite3.connect(db_file) as conn:
+                cur = conn.cursor()
+                cur.execute("DELETE FROM customer_logins_stg;")
+                cur.execute("DELETE FROM customer_registration_stg;")
+                cur.execute("DELETE FROM games_purchase_stg;")
+                cur.execute("DELETE FROM lottery_purchase_stg;")
+                cur.execute("DELETE FROM customer_logins_qrtn;")
+                cur.execute("DELETE FROM customer_registration_qrtn;")
+                cur.execute("DELETE FROM games_purchase_qrtn;")
+                cur.execute("DELETE FROM lottery_purchase_qrtn;")
+                cur.execute("DELETE FROM audit_events;")
+                conn.commit()
     return
                 
 

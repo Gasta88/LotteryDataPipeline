@@ -41,14 +41,14 @@ def run_qa_logins(db_file, debug=0):
             qrt_df = clean_df[tmp_row_idx ]
             clean_df = clean_df[~tmp_row_idx]
         # no digits on website   
-        tmp_row_idx = clean_df['site'].str.contains('\\d', regex=True)
+        tmp_row_idx = clean_df['site'].str.isnumeric()
         if tmp_row_idx.sum() > 0:
             logger.debug(
                 '{} rows with digits in website.'.format(tmp_row_idx.sum()))
             qrt_df.append(clean_df[tmp_row_idx ])
             clean_df = clean_df[~tmp_row_idx]
         # no literal on customernumber    
-        tmp_row_idx = clean_df['site'].str.contains('\\w', regex=True)
+        tmp_row_idx = clean_df['customernumber'].str.isalpha()
         if tmp_row_idx.sum() > 0:
             logger.debug(
                 '{} rows with literals in customer id.'.format(
@@ -64,6 +64,7 @@ def run_qa_logins(db_file, debug=0):
         clean_df = pd.concat([clean_df, old_clean_df]).drop_duplicates(
             keep=False)
         if clean_df.shape[0] > 0:
+            clean_df['audittime'] = pd.to_datetime('now')
             clean_df.to_sql('customer_logins_clean', conn, index=False, if_exists='append',
                        chunksize=200000)
     logger.info('Running QA checks on customer_logins complete.')
@@ -125,6 +126,7 @@ def run_qa_registration(db_file, debug=0):
             qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
                                    ignore_index=True)
             clean_df = clean_df[~tmp_row_idx]
+        
         # no duplicate customernumber + customeremail records
         tmp_row_idx = clean_df.duplicated(subset=['customeremail',
                                                 'customernumber'],keep=False)
@@ -143,6 +145,7 @@ def run_qa_registration(db_file, debug=0):
         clean_df = pd.concat([clean_df, old_clean_df]).drop_duplicates(
             keep=False)
         if clean_df.shape[0] > 0:
+            clean_df['audittime'] = pd.to_datetime('now')
             clean_df.to_sql('customer_registration_clean', conn, index=False, if_exists='append',
                        chunksize=200000)
     logger.info('Running QA checks on customer_registrations complete.')
@@ -194,6 +197,18 @@ def run_qa_games(db_file, debug=0):
                                    ignore_index=True)
                 clean_df = clean_df[~tmp_row_idx]
         
+        # # no duplicate ticketexternalid + aggregationkey + customernumber records
+        # tmp_row_idx = clean_df.duplicated(subset=['ticketexternalid',
+        #                                           'aggregationkey',
+        #                                           'customernumber'],keep=False)
+        # if tmp_row_idx.sum() > 0:
+        #     logger.debug(
+        #         '{} rows with duplicate ticketexternalid, aggregationkey, customernumber id.'.format(
+        #             tmp_row_idx.shape[0]))
+            qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
+                                   ignore_index=True)
+            clean_df = clean_df[~tmp_row_idx]
+        
         qrt_df.to_sql('games_purchase_qrtn', conn, index=False, if_exists='append',
                        chunksize=200000)
         query = "SELECT * FROM games_purchase_clean;"
@@ -201,6 +216,7 @@ def run_qa_games(db_file, debug=0):
         clean_df = pd.concat([clean_df, old_clean_df]).drop_duplicates(
             keep=False)
         if clean_df.shape[0] > 0:
+            clean_df['audittime'] = pd.to_datetime('now')
             clean_df.to_sql('games_purchase_clean', conn, index=False, if_exists='append',
                        chunksize=200000)
     logger.info('Running QA checks on games_purchase complete.')
@@ -230,8 +246,7 @@ def run_qa_lottery(db_file, debug=0):
         
         # no null values in selected columns
         not_null_cols = ['timestampunix', 'site', 'customernumber', 'amountincents',
-                         'feeamountincents', 'game', 'orderidentifier',
-                         'paymentamountincents', 'ticketid']
+                         'feeamountincents', 'game', 'orderidentifier', 'ticketid']
         for c in not_null_cols:
             tmp_row_idx = clean_df[c].isna()
             if tmp_row_idx.sum() > 0:
@@ -261,6 +276,7 @@ def run_qa_lottery(db_file, debug=0):
         clean_df = pd.concat([clean_df, old_clean_df]).drop_duplicates(
             keep=False)
         if clean_df.shape[0] > 0:
+            clean_df['audittime'] = pd.to_datetime('now')
             clean_df.to_sql('lottery_purchase_clean', conn, index=False, if_exists='append',
                        chunksize=200000)
     logger.info('Running QA checks on lottery_purchase complete.')

@@ -25,11 +25,10 @@ CREATE TABLE IF NOT EXISTS "discount"(
 );
 
 CREATE TABLE IF NOT EXISTS "login"(
-	"id" INTEGER PRIMARY KEY,
-	"customer_id" TEXT NOT NULL,
+	"id" TEXT NOT NULL,
 	"website" TEXT NOT NULL,
 	"timestamp" DATETIME NOT NULL,
-	FOREIGN KEY ("customer_id") 
+	FOREIGN KEY ("id") 
 		REFERENCES "customer"("id") 
 			ON UPDATE CASCADE
 			ON DELETE SET NULL -- maintain login history of inactive customers
@@ -56,11 +55,11 @@ CREATE TABLE IF NOT EXISTS "product"(
 CREATE TABLE IF NOT EXISTS "ticket"(
 	"id" TEXT PRIMARY KEY,  
 	"product_id" TEXT NOT NULL,
-	"betindex" INTEGER NOT NULL,
+	"betindex" INTEGER NULL,
 	"currency"	TEXT NULL,
 	"price" REAL DEFAULT 0.0,
 	"fee" REAL DEFAULT 0.0,
-	"discount_id" INTEGER NOT NULL,	
+	"discount_id" INTEGER NULL,	
 	FOREIGN KEY ("product_id")
 		REFERENCES "product"("id")
 			ON UPDATE CASCADE
@@ -90,5 +89,16 @@ CREATE TABLE IF NOT EXISTS "booking"(
 
 -- views
 
+/*
+CREATE VIEW IF NOT EXISTS  "billing_vw" AS
 
+
+;
+
+CREATE VIEW IF NOT EXISTS "active_customers_vw" AS
+;
+
+CREATE VIEW IF NOT EXISTS "checkout_vw" AS 
+;
+*/
 COMMIT;

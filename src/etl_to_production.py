@@ -30,7 +30,8 @@ def prepare_discount_table(db_staging, db_prod):
         staging_df.insert(3, 'type', type_series)
         prod_df = pd.concat([prod_df, staging_df]).drop_duplicates(keep=False)
         if prod_df.shape[0] > 0:
-            prod_df.to_sql('discount', conn_prod, if_exists='fail',
+            prod_df.drop(labels='audittime', axis=1, inplace=True)
+            prod_df.to_sql('discount', conn_prod, if_exists='append',
                               index=False)
         return
     
@@ -47,7 +48,8 @@ def prepare_login_table(db_staging, db_prod):
         staging_df = pd.read_sql_query(query, con=conn_stg)
         prod_df = pd.concat([prod_df, staging_df]).drop_duplicates(keep=False)
         if prod_df.shape[0] > 0:
-            prod_df.to_sql('login', conn_prod, if_exists='fail',
+            prod_df.drop(labels='audittime', axis=1, inplace=True)
+            prod_df.to_sql('login', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
         return
 
@@ -62,7 +64,8 @@ def prepare_registration_table(db_staging, db_prod):
         staging_df = pd.read_sql_query(query, con=conn_stg)
         prod_df = pd.concat([prod_df, staging_df]).drop_duplicates(keep=False)
         if prod_df.shape[0] > 0:
-            prod_df.to_sql('registration', conn_prod, if_exists='fail',
+            prod_df.drop(labels='audittime', axis=1, inplace=True)
+            prod_df.to_sql('registration', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
         return
 
@@ -77,7 +80,8 @@ def prepare_customer_table(db_staging, db_prod):
         staging_df = pd.read_sql_query(query, con=conn_stg)
         prod_df = pd.concat([prod_df, staging_df]).drop_duplicates(keep=False)
         if prod_df.shape[0] > 0:
-            prod_df.to_sql('customer', conn_prod, if_exists='fail',
+            prod_df.drop(labels='audittime', axis=1, inplace=True)
+            prod_df.to_sql('customer', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
         return
 
@@ -92,7 +96,8 @@ def prepare_ticket_table(db_staging, db_prod):
         staging_df = pd.read_sql_query(query, con=conn_stg)
         prod_df = pd.concat([prod_df, staging_df]).drop_duplicates(keep=False)
         if prod_df.shape[0] > 0:
-            prod_df.to_sql('ticket', conn_prod, if_exists='fail',
+            prod_df.drop(labels='audittime', axis=1, inplace=True)
+            prod_df.to_sql('ticket', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
         return
 
@@ -107,7 +112,8 @@ def prepare_booking_table(db_staging, db_prod):
         staging_df = pd.read_sql_query(query, con=conn_stg)
         prod_df = pd.concat([prod_df, staging_df]).drop_duplicates(keep=False)
         if prod_df.shape[0] > 0:
-            prod_df.to_sql('booking', conn_prod, if_exists='fail',
+            prod_df.drop(labels='audittime', axis=1, inplace=True)
+            prod_df.to_sql('booking', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
         return
 
@@ -122,7 +128,8 @@ def prepare_product_table(db_staging, db_prod):
         staging_df = pd.read_sql_query(query, con=conn_stg)
         prod_df = pd.concat([prod_df, staging_df]).drop_duplicates(keep=False)
         if prod_df.shape[0] > 0:
-            prod_df.to_sql('product', conn_prod, if_exists='fail',
+            prod_df.drop(labels='audittime', axis=1, inplace=True)
+            prod_df.to_sql('product', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
         return
 
