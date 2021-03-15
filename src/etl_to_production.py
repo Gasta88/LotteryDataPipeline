@@ -33,6 +33,7 @@ def prepare_discount_table(db_staging, db_prod):
             prod_df.drop(labels='audittime', axis=1, inplace=True)
             prod_df.to_sql('discount', conn_prod, if_exists='append',
                               index=False)
+        logger.info('Discount table updated.')
         return
     
     
@@ -51,6 +52,7 @@ def prepare_login_table(db_staging, db_prod):
             prod_df.drop(labels='audittime', axis=1, inplace=True)
             prod_df.to_sql('login', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
+        logger.info('Login table updated.')
         return
 
 def prepare_registration_table(db_staging, db_prod):
@@ -67,6 +69,7 @@ def prepare_registration_table(db_staging, db_prod):
             prod_df.drop(labels='audittime', axis=1, inplace=True)
             prod_df.to_sql('registration', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
+        logger.info('Registration table updated.')
         return
 
 def prepare_customer_table(db_staging, db_prod):
@@ -83,6 +86,7 @@ def prepare_customer_table(db_staging, db_prod):
             prod_df.drop(labels='audittime', axis=1, inplace=True)
             prod_df.to_sql('customer', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
+        logger.info('Customer table updated.')
         return
 
 def prepare_ticket_table(db_staging, db_prod):
@@ -99,6 +103,7 @@ def prepare_ticket_table(db_staging, db_prod):
             prod_df.drop(labels='audittime', axis=1, inplace=True)
             prod_df.to_sql('ticket', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
+        logger.info('Ticket table updated.')
         return
 
 def prepare_booking_table(db_staging, db_prod):
@@ -115,6 +120,7 @@ def prepare_booking_table(db_staging, db_prod):
             prod_df.drop(labels='audittime', axis=1, inplace=True)
             prod_df.to_sql('booking', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
+        logger.info('Booking table updated.')
         return
 
 def prepare_product_table(db_staging, db_prod):
@@ -131,5 +137,6 @@ def prepare_product_table(db_staging, db_prod):
             prod_df.drop(labels='audittime', axis=1, inplace=True)
             prod_df.to_sql('product', conn_prod, if_exists='append',
                               index=False, chunksize=200000)
+        logger.info('Product table updated.')
         return
 

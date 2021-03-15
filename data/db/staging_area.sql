@@ -285,7 +285,7 @@ SELECT union_tbl.order_id,
 	   union_tbl.website,
 	   union_tbl.audittime
 	FROM (SELECT orderidentifier AS order_id,
-	   ticketid AS ticket_id,
+	   ticketid || orderidentifier || customernumber AS ticket_id,
 	   customernumber AS customer_id,
 	   datetime(timestampunix, 'unixepoch', 'localtime') as "timestamp",
 	   site as website,
@@ -293,7 +293,7 @@ SELECT union_tbl.order_id,
 	   FROM lottery_purchase_clean WHERE audittime >= (SELECT last_event FROM audit_events)
 	UNION ALL
 	SELECT ticketexternalid AS order_id,
-		gamename || customernumber || ticketexternalid as ticket_id,
+		aggregationkey || customernumber || ticketexternalid || "timestamp" as ticket_id,
 		customernumber as customer_id,
 		"timestamp",
 		sitetid as website,
