@@ -5,10 +5,14 @@
 import logging
 import sqlite3
 import pandas as pd
+import os
+
 
 logger = logging.getLogger('file_logger')
+db_staging = os.path.join('..', 'db', 'staging.db')
+db_prod = os.path.join('..', 'db', 'production.db')
 
-def prepare_discount_table(db_staging, db_prod):
+def prepare_discount_table():
     """Extact information from discount_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
@@ -38,7 +42,7 @@ def prepare_discount_table(db_staging, db_prod):
     
     
 
-def prepare_login_table(db_staging, db_prod):
+def prepare_login_table():
     """Extact information from logins_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
@@ -55,7 +59,7 @@ def prepare_login_table(db_staging, db_prod):
         logger.info('Login table updated.')
         return
 
-def prepare_registration_table(db_staging, db_prod):
+def prepare_registration_table():
     """Extact information from registration_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
@@ -72,7 +76,7 @@ def prepare_registration_table(db_staging, db_prod):
         logger.info('Registration table updated.')
         return
 
-def prepare_customer_table(db_staging, db_prod):
+def prepare_customer_table():
     """Extact information from customer_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
@@ -89,7 +93,7 @@ def prepare_customer_table(db_staging, db_prod):
         logger.info('Customer table updated.')
         return
 
-def prepare_ticket_table(db_staging, db_prod):
+def prepare_ticket_table():
     """Extact information from ticket_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
@@ -106,7 +110,7 @@ def prepare_ticket_table(db_staging, db_prod):
         logger.info('Ticket table updated.')
         return
 
-def prepare_booking_table(db_staging, db_prod):
+def prepare_booking_table():
     """Extact information from booking_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
@@ -123,7 +127,7 @@ def prepare_booking_table(db_staging, db_prod):
         logger.info('Booking table updated.')
         return
 
-def prepare_product_table(db_staging, db_prod):
+def prepare_product_table():
     """Extact information from product_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])

@@ -119,6 +119,7 @@ SELECT c.id AS customer_id,
        l."timestamp" AS login_datetime,
        STRFTIME('%Y', l."timestamp") AS login_year,
 	   STRFTIME('%m', l."timestamp") AS login_month,
+	   STRFTIME('%W', l."timestamp") AS login_week,
 	   STRFTIME('%d', l."timestamp") AS login_day,
 		CASE
 			WHEN CAST(strftime('%m', l."timestamp") AS integer) BETWEEN 1 AND 3 THEN 1
@@ -129,9 +130,22 @@ SELECT c.id AS customer_id,
 		l.website 
 FROM customer c INNER JOIN login l ON c.id=l.id;
 
-
-/*
-CREATE VIEW IF NOT EXISTS "checkout_vw" AS 
-;
-*/
+CREATE VIEW IF NOT EXISTS "checkout_vw" AS
+SELECT c.id AS customer_id,
+	   b.order_id,
+	   b."timestamp" AS booking_datetime,
+	STRFTIME('%Y', b."timestamp") AS booking_year,
+	STRFTIME('%m', b."timestamp") AS booking_month,
+	STRFTIME('%d', b."timestamp") AS booking_day,
+	CASE
+		WHEN CAST(strftime('%m', b."timestamp") AS integer) BETWEEN 1 AND 3 THEN 1
+		WHEN CAST(strftime('%m', b."timestamp") AS integer) BETWEEN 4 and 6 THEN 2
+		WHEN CAST(strftime('%m', b."timestamp") AS integer) BETWEEN 7 and 9 THEN 3
+		ELSE 4
+	END AS booking_quarter,
+	t.price + t.fee AS total_price,
+	t.currency,
+	b.website 
+FROM booking b INNER JOIN ticket t ON b.ticket_id =t.id
+				INNER JOIN customer c ON b.customer_id =c.id;
 COMMIT;

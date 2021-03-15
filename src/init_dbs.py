@@ -55,8 +55,14 @@ def validate_folder_and_files(folder):
         logger.debug('{} does not exist. ETL stopped.'.format(folder))
         sys.exit('Import folder does not exist.')
 
-def validate_file_header(files, headers):
+def validate_file_header(files):
     """Validate first line of the file."""
+    headers = {
+    'customerlogins': 'timestamp;site;customernumber',
+    'customerregistration': 'timestamp;site;customeremail;dateofbirth;familyname;givennames;primaryaddress_addressline;primaryaddress_city;primaryaddress_federalstate;primaryaddress_postalcode;primaryaddress_sovereignstate;primaryaddress_street;registrationdate;customernumber',
+    'instantgamespurchase': 'timestamp;sitetid;customernumber;currency;aggregationkey;gamename;highfrequencygame;priceineur;feeineur;ticketexternalid;winningsineur',
+    'lotterygamespurchase': 'timestampunix;site;customernumber;currency;amountincents;feeamountincents;game;orderidentifier;paymentamountincents;ticketid;betindex;discount'
+    }
     for file_path in files:
         for k, v in headers.items():
             if k in file_path:
@@ -87,11 +93,12 @@ def validate_file_header(files, headers):
     return files_to_tables
 
 
-def load_file_in_staging(file_path, table_name, db_file):
+def load_file_in_staging(file_path, table_name):
     """Load content of file inside *_stg tables."""
     tmp_df = pd.read_table(file_path, header=0, sep=';', dtype='str',
                             encoding='latin-1')
     logger.info('Uploading {} into {}.'.format(file_path, table_name))
+    db_file = os.path.join('..', 'db', 'staging.db')
     with sqlite3.connect(db_file) as conn:
          tmp_df.to_sql(table_name, conn, index=False, if_exists='append',
                        chunksize=200000)

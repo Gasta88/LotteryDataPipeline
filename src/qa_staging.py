@@ -6,10 +6,12 @@ import logging
 import sqlite3
 import pandas as pd
 import numpy as np
+import os
 
 logger = logging.getLogger('file_logger')
+db_file = os.path.join('..', 'db', 'staging.db')
 
-def update_audit_table(db_file):
+def update_audit_table():
     """ Update audit_events table."""
     with sqlite3.connect(db_file) as conn:
         sql = "INSERT INTO audit_events (last_event) VALUES (current_timestamp);"
@@ -18,7 +20,7 @@ def update_audit_table(db_file):
         conn.commit()
     return
 
-def run_qa_logins(db_file, debug=0):
+def run_qa_logins(debug=0):
     """Run QA checks on logins records.
 
     Bad records are sent to customer_logins_qrtn for manual inspection.
@@ -78,7 +80,7 @@ def run_qa_logins(db_file, debug=0):
     return
     
 
-def run_qa_registration(db_file, debug=0):
+def run_qa_registration(debug=0):
     """Run QA checks on registrations records.
 
     Bad records are sent to customer_registrations_qrtn for manual inspection.
@@ -158,7 +160,7 @@ def run_qa_registration(db_file, debug=0):
         return(n_rows_qrt, n_rows_clean)
     return
 
-def run_qa_games(db_file, debug=0):
+def run_qa_games(debug=0):
     """Run QA checks on instant game purchase records.
 
     Bad records are sent to games_purchase_qrtn for manual inspection.
@@ -205,9 +207,9 @@ def run_qa_games(db_file, debug=0):
         #     logger.debug(
         #         '{} rows with duplicate ticketexternalid, aggregationkey, customernumber id.'.format(
         #             tmp_row_idx.shape[0]))
-            qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
-                                   ignore_index=True)
-            clean_df = clean_df[~tmp_row_idx]
+            # qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
+            #                        ignore_index=True)
+            # clean_df = clean_df[~tmp_row_idx]
         
         qrt_df.to_sql('games_purchase_qrtn', conn, index=False, if_exists='append',
                        chunksize=200000)
@@ -229,7 +231,7 @@ def run_qa_games(db_file, debug=0):
         return(n_rows_qrt, n_rows_clean)
     return
 
-def run_qa_lottery(db_file, debug=0):
+def run_qa_lottery(debug=0):
     """Run QA checks on instant lottery purchase records.
 
     Bad records are sent to lottery_purchase_qrtn for manual inspection.
