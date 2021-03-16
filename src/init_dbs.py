@@ -7,33 +7,46 @@ import sqlite3
 import os
 import sys
 import pandas as pd
+from .settings import db_staging_file, db_production_file, schema_staging_file,\
+    schema_production_file, inputfiles_headers
 
 logger = logging.getLogger('file_logger')
 
 
-def init_database(db_file, schema_file):
+
+
+def init_staging_database():
     """Initialize database from file."""
-    if not os.path.exists(db_file):
-        logger.debug('Initialize database with {}'.format(db_file))
-        with sqlite3.connect(db_file) as conn:
-            with open(schema_file, 'r') as schema:
+    if not os.path.exists(db_staging_file):
+        logger.debug('Initialize database with {}'.format(db_staging_file))
+        with sqlite3.connect(db_staging_file) as conn:
+            with open(schema_staging_file, 'r') as schema:
                 conn.executescript(schema.read())
     else:
-        if 'staging' in db_file:
-            logger.debug('Cleaning *_stg and *_qrtn tables')
-            with sqlite3.connect(db_file) as conn:
-                cur = conn.cursor()
-                cur.execute("DELETE FROM customer_logins_stg;")
-                cur.execute("DELETE FROM customer_registration_stg;")
-                cur.execute("DELETE FROM games_purchase_stg;")
-                cur.execute("DELETE FROM lottery_purchase_stg;")
-                cur.execute("DELETE FROM customer_logins_qrtn;")
-                cur.execute("DELETE FROM customer_registration_qrtn;")
-                cur.execute("DELETE FROM games_purchase_qrtn;")
-                cur.execute("DELETE FROM lottery_purchase_qrtn;")
-                cur.execute("DELETE FROM audit_events;")
-                conn.commit()
+        logger.debug('Cleaning *_stg and *_qrtn tables')
+        with sqlite3.connect(db_staging_file) as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM customer_logins_stg;")
+            cur.execute("DELETE FROM customer_registration_stg;")
+            cur.execute("DELETE FROM games_purchase_stg;")
+            cur.execute("DELETE FROM lottery_purchase_stg;")
+            cur.execute("DELETE FROM customer_logins_qrtn;")
+            cur.execute("DELETE FROM customer_registration_qrtn;")
+            cur.execute("DELETE FROM games_purchase_qrtn;")
+            cur.execute("DELETE FROM lottery_purchase_qrtn;")
+            cur.execute("DELETE FROM audit_events;")
+            conn.commit()
     return
+
+def init_prod_database():
+    """Initialize database from file."""
+    if not os.path.exists(db_production_file):
+        logger.debug('Initialize database with {}'.format(db_production_file))
+        with sqlite3.connect(db_production_file) as conn:
+            with open(schema_production_file, 'r') as schema:
+                conn.executescript(schema.read())
+    else:
+        return
                 
 
 def validate_folder_and_files(folder):
@@ -57,14 +70,8 @@ def validate_folder_and_files(folder):
 
 def validate_file_header(files):
     """Validate first line of the file."""
-    headers = {
-    'customerlogins': 'timestamp;site;customernumber',
-    'customerregistration': 'timestamp;site;customeremail;dateofbirth;familyname;givennames;primaryaddress_addressline;primaryaddress_city;primaryaddress_federalstate;primaryaddress_postalcode;primaryaddress_sovereignstate;primaryaddress_street;registrationdate;customernumber',
-    'instantgamespurchase': 'timestamp;sitetid;customernumber;currency;aggregationkey;gamename;highfrequencygame;priceineur;feeineur;ticketexternalid;winningsineur',
-    'lotterygamespurchase': 'timestampunix;site;customernumber;currency;amountincents;feeamountincents;game;orderidentifier;paymentamountincents;ticketid;betindex;discount'
-    }
     for file_path in files:
-        for k, v in headers.items():
+        for k, v in inputfiles_headers.items():
             if k in file_path:
                 with open(file_path, 'r', encoding='latin-1') as f:
                     first_line = f.readline()
@@ -98,8 +105,7 @@ def load_file_in_staging(file_path, table_name):
     tmp_df = pd.read_table(file_path, header=0, sep=';', dtype='str',
                             encoding='latin-1')
     logger.info('Uploading {} into {}.'.format(file_path, table_name))
-    db_file = os.path.join('..', 'db', 'staging.db')
-    with sqlite3.connect(db_file) as conn:
+    with sqlite3.connect(db_staging_file) as conn:
          tmp_df.to_sql(table_name, conn, index=False, if_exists='append',
                        chunksize=200000)
          logger.info('Imported {} rows.'.format(tmp_df.shape[0]))

@@ -5,18 +5,15 @@
 import logging
 import sqlite3
 import pandas as pd
-import os
-
+from .settings import db_staging_file, db_production_file
 
 logger = logging.getLogger('file_logger')
-db_staging = os.path.join('..', 'db', 'staging.db')
-db_prod = os.path.join('..', 'db', 'production.db')
 
 def prepare_discount_table():
     """Extact information from discount_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
-    with sqlite3.connect(db_prod) as conn_prod, sqlite3.connect(db_staging) as conn_stg:
+    with sqlite3.connect(db_production_file) as conn_prod, sqlite3.connect(db_staging_file) as conn_stg:
         query = "SELECT * FROM discount;"
         prod_df = pd.read_sql_query(query, con=conn_prod)
         query = "SELECT * FROM discount_vw;"
@@ -46,7 +43,7 @@ def prepare_login_table():
     """Extact information from logins_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
-    with sqlite3.connect(db_prod) as conn_prod, sqlite3.connect(db_staging) as conn_stg:
+    with sqlite3.connect(db_production_file) as conn_prod, sqlite3.connect(db_staging_file) as conn_stg:
         query = "SELECT * FROM login;"
         prod_df = pd.read_sql_query(query, con=conn_prod)
         query = "SELECT * FROM login_vw;"
@@ -63,7 +60,7 @@ def prepare_registration_table():
     """Extact information from registration_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
-    with sqlite3.connect(db_prod) as conn_prod, sqlite3.connect(db_staging) as conn_stg:
+    with sqlite3.connect(db_production_file) as conn_prod, sqlite3.connect(db_staging_file) as conn_stg:
         query = "SELECT * FROM registration;"
         prod_df = pd.read_sql_query(query, con=conn_prod)
         query = "SELECT * FROM registration_vw;"
@@ -80,7 +77,7 @@ def prepare_customer_table():
     """Extact information from customer_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
-    with sqlite3.connect(db_prod) as conn_prod, sqlite3.connect(db_staging) as conn_stg:
+    with sqlite3.connect(db_production_file) as conn_prod, sqlite3.connect(db_staging_file) as conn_stg:
         query = "SELECT * FROM customer;"
         prod_df = pd.read_sql_query(query, con=conn_prod)
         query = "SELECT * FROM customer_vw;"
@@ -97,7 +94,7 @@ def prepare_ticket_table():
     """Extact information from ticket_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
-    with sqlite3.connect(db_prod) as conn_prod, sqlite3.connect(db_staging) as conn_stg:
+    with sqlite3.connect(db_production_file) as conn_prod, sqlite3.connect(db_staging_file) as conn_stg:
         query = "SELECT * FROM ticket;"
         prod_df = pd.read_sql_query(query, con=conn_prod)
         query = "SELECT * FROM ticket_vw;"
@@ -114,7 +111,7 @@ def prepare_booking_table():
     """Extact information from booking_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
-    with sqlite3.connect(db_prod) as conn_prod, sqlite3.connect(db_staging) as conn_stg:
+    with sqlite3.connect(db_production_file) as conn_prod, sqlite3.connect(db_staging_file) as conn_stg:
         query = "SELECT * FROM booking;"
         prod_df = pd.read_sql_query(query, con=conn_prod)
         query = "SELECT * FROM booking_vw;"
@@ -131,7 +128,7 @@ def prepare_product_table():
     """Extact information from product_vw and prepare production table."""
     prod_df = pd.DataFrame([])
     staging_df = pd.DataFrame([])
-    with sqlite3.connect(db_prod) as conn_prod, sqlite3.connect(db_staging) as conn_stg:
+    with sqlite3.connect(db_production_file) as conn_prod, sqlite3.connect(db_staging_file) as conn_stg:
         query = "SELECT * FROM product;"
         prod_df = pd.read_sql_query(query, con=conn_prod)
         query = "SELECT * FROM product_vw;"

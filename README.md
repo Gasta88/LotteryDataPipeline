@@ -5,17 +5,18 @@
 
 The project is developed using SQLite database and python scripts to perform the different stages of the ETL process.
 
-The choice is based on personal knowledge and time constrains. Alternatives can be unlimited.
+The choice is based on personal knowledge and time constrains. Alternatives can be unlimited and open for discussion during the following meeting.
 
 ### Project layout
 
-Two SQLite databases to store *staging* and *production*. ETL performed via Python scripts supported with Pandas.
- Data visualization via Jupyter inside a Docker container.
+Two SQLite databases to store inside *staging* and *production* part. ETL performed via Python scripts supported with Pandas, along with views generated on the databases.
+Data visualization via Jupyter inside a Docker container.
 
 
 ### Staging area
 
 The *staging area* in divided in sub-parts:
+
 - tables with "stg" appendix: direct upload from source material. Volatile tables without QA checks performed.
     
 - tables with "qrtn" appendix: quarantine tables to hold those records that fail QA checks. Require manual inspections to be moved forward or removed completely.
@@ -25,17 +26,30 @@ The *staging area* in divided in sub-parts:
 Presence of triggers only on the clean tables to guarntee the update of the *audittime* column whenever a DELETE or UPDATE is performed as a row-event.
 
 Indexes implemented at the *audittime* columns in the clean tables to improve performance of the balanced load from *staging* to *production*.
+
 This result in a drop in performance during INSERT inside the before mentioned tables.
+
+A picture of the schema EDR is in `imgs` folder.
 
 ### Production area
 
-The *production area* has the following EDR: *insert pic here*
+A picture of the schema EDR is in `imgs` folder.
 
 Views are used to organize the data quickly inside the database, to be later visualized inside the Jupyter notebook.
 
 ### Data workflow
 
-*insert pic here*
+A summary of the pipeline is in `imgs` folder.
+
+The main points are the following:
+
+- **Collection:** Data is extracted with Pandas and allocated inside the respctive tables in the *staging* database.
+
+- **Store:**  SQLite *staging* database is modeled to guarantee QA checks and a incremental upload into the *production* database.
+
+- **Analyze:** SQLite is been leveraged with views to present the data for analysis and presentation.
+
+- **Consume:** Jupyter is used to visualize the data in a tabulated format. Ideally, plots also be presented.
 
 
 --------------------
@@ -108,23 +122,20 @@ The QA checks are based on the following assumptions:
 Follow these steps:
 
  1. Activate virtual environment via `source venv/bin/activate`
- 2. Run script with one of these options:
-   2a. `python main.py`
-   2b. `python3 main.py`
-   2c. Open main.py with preferred IDE and iterate through the lines of the main().
-
-### Test cases
-
-Follow these steps:
-
- 1. Activate virtual environment via `source venv/bin/activate`
- 2. Open main.py with preferred IDE and change line 19 'data/input' to 'data/test_input'
+ 2. Allocate input files in `data/input` folder
  3. Run script with one of these options:
    3a. `python main.py`
    3b. `python3 main.py`
    3c. Open main.py with preferred IDE and iterate through the lines of the main().
+   
+Run time is approximatelly ??? until report generation.
+My station specs are:
+ 
+ - CPU Intel i7-7700HQ @ 2.8GHz 2.81GHz
+ - 16 GB RAM
+ - Windows 10
 
-### Reporting
+### Visualize Reports
 
 Please make sure that Docker is installed on the computer. Run:
 
@@ -138,6 +149,15 @@ Access the notebook on work/reports folder.
 ### Software requirements
 
 Check the requirements.txt for any details. a virtual environment is available as well.
-Make sure docker is available for the reporting.
+Make sure docker is available for the visualization of the reports.
 
- 
+
+### Possible improvements
+
+During development I cam to realize that this project is far from perfect, therefore I have  a couple of points that could be seen as weak points/possible improvements:
+
+- Manual insertion of records from *_qrtn to *_clean needs to be provided with "current_timestamp" to guaranteed the value in the audittime column. 
+- Dask over Pandas: faster in reading files, but not much SQL support on the API.
+- Alternative to Jupyter for report visualization. Generation of reports is done via Python script because it incours into a limit of IO processing data volume.
+- Use materialized views over simple views in *production*. These have to be manually refreshed, but they would be a faster mean to the report generation.
+- Different database technology (ex: Oracle, SQL Server or PostgreSQL) which has its own "change content monitor" feature.

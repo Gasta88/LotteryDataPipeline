@@ -6,14 +6,13 @@ import logging
 import sqlite3
 import pandas as pd
 import numpy as np
-import os
+from .settings import db_staging_file
 
 logger = logging.getLogger('file_logger')
-db_file = os.path.join('..', 'db', 'staging.db')
 
 def update_audit_table():
     """ Update audit_events table."""
-    with sqlite3.connect(db_file) as conn:
+    with sqlite3.connect(db_staging_file) as conn:
         sql = "INSERT INTO audit_events (last_event) VALUES (current_timestamp);"
         cur = conn.cursor()
         cur.execute(sql)
@@ -30,7 +29,7 @@ def run_qa_logins(debug=0):
     clean_df = pd.DataFrame([])
     tmp_row_idx = pd.Series([])
     logger.info('Running QA checks on customer_logins begin.')
-    with sqlite3.connect(db_file) as conn:
+    with sqlite3.connect(db_staging_file) as conn:
         query = "SELECT * FROM customer_logins_stg;"
         clean_df = pd.read_sql_query(query, con=conn)
         clean_df.fillna(value=np.nan, inplace=True)
@@ -90,7 +89,7 @@ def run_qa_registration(debug=0):
     clean_df = pd.DataFrame([])
     tmp_row_idx = pd.Series([])
     logger.info('Running QA checks on customer_registrations begin.')
-    with sqlite3.connect(db_file) as conn:
+    with sqlite3.connect(db_staging_file) as conn:
         query = "SELECT * FROM customer_registration_stg;"
         clean_df = pd.read_sql_query(query, con=conn)
         clean_df.fillna(value=np.nan, inplace=True)
@@ -170,7 +169,7 @@ def run_qa_games(debug=0):
     clean_df = pd.DataFrame([])
     tmp_row_idx = pd.Series([])
     logger.info('Running QA checks on games_purchase begin.')
-    with sqlite3.connect(db_file) as conn:
+    with sqlite3.connect(db_staging_file) as conn:
         query = "SELECT * FROM games_purchase_stg;"
         clean_df = pd.read_sql_query(query, con=conn)
         clean_df.fillna(value=np.nan, inplace=True)
@@ -241,7 +240,7 @@ def run_qa_lottery(debug=0):
     clean_df = pd.DataFrame([])
     tmp_row_idx = pd.Series([])
     logger.info('Running QA checks on lottery_purchase begin.')
-    with sqlite3.connect(db_file) as conn:
+    with sqlite3.connect(db_staging_file) as conn:
         query = "SELECT * FROM lottery_purchase_stg;"
         clean_df = pd.read_sql_query(query, con=conn)
         clean_df.fillna(value=np.nan, inplace=True)
