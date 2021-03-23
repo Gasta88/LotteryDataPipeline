@@ -78,3 +78,22 @@ def generate_avg_checkout():
     logger.info('Average customer basket complete.')
     return
 
+def generate_monthly_diff():
+    """Write monthly difference for each customer."""
+    df = pd.DataFrame([])
+    with sqlite3.connect(db_production_file) as conn:
+        query = """SELECT t.customer_id, t.booking_year ||\'-\'||t.booking_month as year_month, t.monthly_price - LAG(t.monthly_price) 
+                    OVER(ORDER BY t.booking_year ,t.booking_month) AS monthly_diff
+                    FROM (SELECT customer_id , booking_year ,booking_month, sum(total_price) AS monthly_price 
+                      FROM checkout_vw cv GROUP BY customer_id , booking_year ,booking_month) t ORDER BY t.booking_year ,t.booking_month ;"""
+                
+        dfs = pd.read_sql_query(query, con=conn, chunksize= 200000)
+    for chunck_df in dfs:
+        df = pd.concat([df, chunck_df], ignore_index=True)
+    file_name = os.path.join(report_folder, 'monthly_diff_customer.csv')
+    df_pivot = df.pivot(index='customer_id', columns='year_month', values='monthly_diff')
+    df_pivot.fillna(0).to_csv(file_name)
+    del df
+    logger.info('Monthly customer report complete.')
+    return
+

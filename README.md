@@ -159,7 +159,7 @@ Make sure docker is available for the visualization of the reports.
 
 During development I came to realize that this project is far from perfect, therefore I have  a couple of points that could be seen as weak points/possible improvements:
 
-- Manual insertion of records from *_qrtn to *_clean needs to be provided with "current_timestamp" to guaranteed the value in the audittime column. 
+- ~~ Manual insertion of records from *_qrtn to *_clean needs to be provided with "current_timestamp" to guaranteed the value in the audittime column. ~~
 - Dask over Pandas: faster in reading files, but not much SQL support on the API at the moment (?). Other workflow pakages could be interesting(ex: Airflow, Luigi)
 - Alternative to Jupyter for report visualization. Generation of reports is done via Python script because it incours into a limit of IO processing data volume.
 - Use materialized views over simple views in *production*. These have to be manually refreshed, but they would be a faster mean to the report generation.
