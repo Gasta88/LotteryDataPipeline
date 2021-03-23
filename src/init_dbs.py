@@ -6,7 +6,7 @@ import logging
 import sqlite3
 import os
 import sys
-import pandas as pd
+import dask.dataframe as dd
 from .settings import db_staging_file, db_production_file, schema_staging_file,\
     schema_production_file, inputfiles_headers
 
@@ -23,13 +23,9 @@ def init_staging_database():
             with open(schema_staging_file, 'r') as schema:
                 conn.executescript(schema.read())
     else:
-        logger.debug('Cleaning *_stg and *_qrtn tables')
+        logger.debug('Cleaning *_qrtn tables')
         with sqlite3.connect(db_staging_file) as conn:
             cur = conn.cursor()
-            cur.execute("DELETE FROM customer_logins_stg;")
-            cur.execute("DELETE FROM customer_registration_stg;")
-            cur.execute("DELETE FROM games_purchase_stg;")
-            cur.execute("DELETE FROM lottery_purchase_stg;")
             cur.execute("DELETE FROM customer_logins_qrtn;")
             cur.execute("DELETE FROM customer_registration_qrtn;")
             cur.execute("DELETE FROM games_purchase_qrtn;")
@@ -102,13 +98,13 @@ def validate_file_header(files):
 
 def load_file_in_staging(file_path, table_name):
     """Load content of file inside *_stg tables."""
-    tmp_df = pd.read_table(file_path, header=0, sep=';', dtype='str',
+    tmp_df = dd.read_table(file_path, header=0, sep=';', dtype='str',
                             encoding='latin-1')
     logger.info('Uploading {} into {}.'.format(file_path, table_name))
-    with sqlite3.connect(db_staging_file) as conn:
-         tmp_df.to_sql(table_name, conn, index=False, if_exists='append',
+    conn = f'sqlite:///{db_staging_file}'
+    tmp_df.to_sql(table_name, conn, index=False, if_exists='replace',
                        chunksize=200000)
-         logger.info('Imported {} rows.'.format(tmp_df.shape[0]))
-         del tmp_df
+    logger.info('Imported {} rows.'.format(tmp_df.shape[0]))
+    del tmp_df
     return
 

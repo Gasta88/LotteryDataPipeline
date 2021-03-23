@@ -78,22 +78,3 @@ def generate_avg_checkout():
     logger.info('Average customer basket complete.')
     return
 
-# def generate_diff_checkout(db_production_file):
-#     """Write previous month difference checkout report by yearly quarter."""
-#     df = pd.DataFrame([])
-#     with sqlite3.connect(db_production_file) as conn:
-#         query = """SELECT customer_id,
-#                           booking_year ||\'-Q\'||booking_quarter AS quarter,
-#                           AVG(total_price) AS total_price
-#                 FROM checkout_vw 
-#                 GROUP BY customer_id, booking_year ||\'-Q\'||booking_quarter;"""
-                
-#         dfs = pd.read_sql_query(query, con=conn, chunksize= 200000)
-#     for chunck_df in dfs:
-#         df = pd.concat([df, chunck_df], ignore_index=True)
-#     df = df.fillna(0)
-#     file_name = '../reports/avg_customer_basket.csv'
-#     df.pivot(index='customer_id', columns='quarter', values='total_price').to_csv(file_name)
-#     del df
-#     logger.debug('Average customer basket complete.')
-#     return
