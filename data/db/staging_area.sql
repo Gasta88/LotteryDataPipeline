@@ -181,6 +181,30 @@ BEGIN
 		UPDATE lottery_purchase_clean SET audittime = datetime('now') WHERE OLD.ticketid = NEW.ticketid;
 END;
 
+CREATE TRIGGER IF NOT EXISTS "insert_customer_logins"
+	AFTER UPDATE ON "customer_logins_clean"
+BEGIN
+		UPDATE customer_logins_clean SET audittime = datetime('now') WHERE customernumber = NEW.customernumber;
+END;
+
+CREATE TRIGGER IF NOT EXISTS "insert_customer_registrations"
+	AFTER UPDATE ON "customer_registration_clean"
+BEGIN
+		UPDATE customer_registration_clean SET audittime = datetime('now') WHERE customernumber = NEW.customernumber;
+END;
+
+CREATE TRIGGER IF NOT EXISTS "insert_games_purchase"
+	AFTER UPDATE ON "games_purchase_clean"
+BEGIN
+		UPDATE games_purchase_clean SET audittime = datetime('now') WHERE ticketexternalid = NEW.ticketexternalid;
+END;
+
+CREATE TRIGGER IF NOT EXISTS "insert_lottery_purchase"
+	AFTER UPDATE ON "lottery_purchase_clean"
+BEGIN
+		UPDATE lottery_purchase_clean SET audittime = datetime('now') WHERE ticketid = NEW.ticketid;
+END;
+
 -- constrains
 
 CREATE INDEX customer_logins_idx ON customer_logins_clean (audittime);

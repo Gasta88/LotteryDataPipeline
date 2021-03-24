@@ -1,8 +1,2 @@
-2021-03-23 09:22:16,198: [INFO]: main.py in main (12): Begin ETL process.
-2021-03-23 09:22:16,198: [INFO]: main.py in main (24): Initialize data QA and transfer to *_clean tables.
-2021-03-23 09:22:16,214: [INFO]: qa_staging.py in run_qa_logins (101): Running QA checks on customer_logins begin.
-in main (24): Initialize data QA and transfer to *_clean tables.
-2021-03-23 09:22:16,214: [INFO]: qa_staging.py in run_qa_logins (101): Running QA checks on customer_logins begin.
-2021-03-23 09:22:16,198: [INFO]: main.py in main (12): Begin ETL process.
-2021-03-23 09:22:16,198: [INFO]: main.py in main (24): Initialize data QA and transfer to *_clean tables.
-2021-03-23 09:22:16,214: [INFO]: qa_staging.py in run_qa_logins (101): Running QA checks on customer_logins begin.
+2021-03-23 22:04:29,626: [INFO]: generate_reports.py in generate_monthly_diff (97): Monthly customer report complete.
+2021-03-23 22:04:29,730: [INFO]: main.py in main (57): Concluded generation of reports.
