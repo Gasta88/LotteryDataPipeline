@@ -5,11 +5,13 @@
 import logging
 import sqlite3
 import pandas as pd
-from .settings import db_production_file
+from .settings import db_production_file, report_folder
 import os
 
 logger = logging.getLogger('file_logger')
-report_folder = 'reports'
+
+if not os.path.exists(report_folder):
+    os.mkdir(report_folder)
 
 def generate_billing(by=None):
     """Write billing report by a certain parameter."""

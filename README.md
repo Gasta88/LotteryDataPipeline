@@ -1,4 +1,4 @@
-# Lotto24 Study Case - Francesco Gastaldello
+# Lottery Data Pipeline
 
 
 ## Design
