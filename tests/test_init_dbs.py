@@ -14,9 +14,11 @@ import tempfile
 class InitDbsTestCase(unittest.TestCase):
     """Run test for the module."""
 
-    # def setUp(self):
-    #     """Initialize test."""
-    #     pass
+    def setUp(self):
+        """Initialize test."""
+        print(db_staging_file)
+        print(db_production_file)
+        print(schema_staging_file)
         
     def tearDown(self):
         """Clean up after test."""
