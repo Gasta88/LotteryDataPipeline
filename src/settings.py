@@ -2,16 +2,16 @@
 
 import os
 
-TEST = os.environ.get('TEST', '0')
+TEST = os.environ.get('CI', False)
 
-if TEST == '0':
-    db_staging_file = os.path.join('db', 'staging.db')
-    db_production_file = os.path.join('db', 'production.db')
-    report_folder = 'reports'
-else: 
+if TEST:
     db_staging_file = os.path.join('db', 'test_staging.db')
     db_production_file = os.path.join('db', 'test_production.db')
     report_folder = 'tests/reports'
+else:
+    db_staging_file = os.path.join('db', 'staging.db')
+    db_production_file = os.path.join('db', 'production.db')
+    report_folder = 'reports'
 
 schema_staging_file = os.path.join('data', 'db', 'staging_area.sql')
 schema_production_file = os.path.join('data', 'db', 'production_area.sql')
