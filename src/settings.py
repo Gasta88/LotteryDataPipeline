@@ -2,7 +2,7 @@
 
 import os
 
-TEST = os.environ.get('CI', False)
+TEST = os.environ.get('TEST', False)
 
 if TEST:
     db_staging_file = os.path.join('db', 'test_staging.db')
