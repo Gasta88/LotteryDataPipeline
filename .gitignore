@@ -2,3 +2,5 @@ data/input/*
 db/*
 reports/*.csv
 reports/*.zip
+venv
+venv/*
