@@ -25,6 +25,7 @@ def run_qa_logins(debug=0):
     Bad records are sent to customer_logins_qrtn for manual inspection.
     Good records are transformed and sent to customer_logins_clean.
     """
+    qrt_df = pd.DataFrame([])
     tmp_row_idx = pd.Series([])
     n_rows_qrt = 0
     n_rows_clean = 0

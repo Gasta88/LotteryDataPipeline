@@ -50,13 +50,14 @@ def validate_folder_and_files(folder):
     if os.path.exists(folder):
         if [f for f in os.listdir(folder) if not f.startswith('.')] != []:
             files = [os.path.join(folder, f) for f in os.listdir(folder)]
-            logger.info('Found {} files to import.'.format(len(files)))
+            logger.info(f'Found {len(files)} files to import.')
             excluded_files = [f for f in files if not f.endswith('csv')]
+            included_files = [f for f in files if f.endswith('csv')]
             if len(excluded_files) > 0:
                 logger.debug(
                     '{} files not suitable for import: {}'.format(
                         len(excluded_files), "\n".join(excluded_files)))
-            return files
+            return included_files
         else:
             logger.debug('No files to import. ETL stopped.')
             sys.exit('No files to import.')
@@ -66,17 +67,21 @@ def validate_folder_and_files(folder):
 
 def validate_file_header(files):
     """Validate first line of the file."""
+    good_files = []
     for file_path in files:
         for k, v in inputfiles_headers.items():
             if k in file_path:
                 with open(file_path, 'r', encoding='latin-1') as f:
                     first_line = f.readline()
-                    if not (first_line.rstrip() == v):
+                    print(f'First line:{first_line}')
+                    if first_line.rstrip() == v:
+                        good_files.append(file_path)
+                    else:
                         file_name = file_path.split(os.sep)[-1]
                         logger.debug(
                             '{} does not have correct header.'.format(
                                 file_name))
-                        files.remove(file_path)
+                    break
     logger.info('{} files with valid headers.'.format(len(files)))
     files_to_tables = {
         'customer_logins_stg': [],
@@ -84,7 +89,7 @@ def validate_file_header(files):
         'games_purchase_stg': [],
         'lottery_purchase_stg': []
             }
-    for file_path in files:
+    for file_path in good_files:
         if 'customerlogin' in file_path:
             files_to_tables['customer_logins_stg'].append(file_path)
         if 'customerregistration' in file_path:
@@ -103,7 +108,7 @@ def load_file_in_staging(file_path, table_name):
     logger.info('Uploading {} into {}.'.format(file_path, table_name))
     conn = f'sqlite:///{db_staging_file}'
     tmp_df.to_sql(table_name, conn, index=False, if_exists='replace',
-                       chunksize=200000)
+                           chunksize=200000)
     logger.info('Imported {} rows.'.format(tmp_df.shape[0]))
     del tmp_df
     return
