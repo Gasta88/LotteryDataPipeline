@@ -26,7 +26,7 @@ def run_qa_logins(debug=0):
     Good records are transformed and sent to customer_logins_clean.
     """
     qrt_df = pd.DataFrame([])
-    tmp_row_idx = pd.Series([])
+    tmp_row_idx = pd.Series([], dtype='object')
     n_rows_qrt = 0
     n_rows_clean = 0
     n_rows_missing = 0
@@ -40,26 +40,29 @@ def run_qa_logins(debug=0):
         clean_df.fillna(value=np.nan, inplace=True)
         
         # no null values allowed
-        tmp_row_idx = clean_df.isna().any(axis=1)
+        tmp_row_idx = clean_df.replace("", np.nan, regex=True).isna().any(axis=1)
         if tmp_row_idx.sum() > 0:
             n_rows_missing += tmp_row_idx.sum()
             qrt_df = clean_df[tmp_row_idx ]
             clean_df = clean_df[~tmp_row_idx]
             
-        # no digits on website   
-        tmp_row_idx = clean_df['site'].str.isnumeric()
+        # no digits on website
+        tmp_row_idx = ~(clean_df['site'].str.isalpha())
         if tmp_row_idx.sum() > 0:
             n_rows_digits += tmp_row_idx.sum()
-            qrt_df.append(clean_df[tmp_row_idx ])
+            qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
+                                   ignore_index=True)
             clean_df = clean_df[~tmp_row_idx]
             
         # no literal on customernumber    
-        tmp_row_idx = clean_df['customernumber'].str.isalpha()
+        tmp_row_idx = ~(clean_df['customernumber'].str.isdigit())
         if tmp_row_idx.sum() > 0:
             n_rows_literals += tmp_row_idx.shape[0]
-            qrt_df.append(clean_df[tmp_row_idx ])
+            qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
+                                   ignore_index=True)
             clean_df = clean_df[~tmp_row_idx]
-    
+        
+        n_rows_qrt = qrt_df.shape[0]
         qrt_df.to_sql('customer_logins_qrtn', conn, index=False, if_exists='append')
         
         query = "SELECT * FROM customer_logins_clean;"
@@ -69,7 +72,6 @@ def run_qa_logins(debug=0):
         if clean_df.shape[0] > 0:
             clean_df['audittime'] = pd.to_datetime('now')
             clean_df.to_sql('customer_logins_clean', conn, index=False, if_exists='append')
-            n_rows_qrt += qrt_df.shape[0]
             n_rows_clean += clean_df.shape[0]
         del qrt_df
         del clean_df
@@ -90,7 +92,7 @@ def run_qa_registration(debug=0):
     Good records are transformed and sent to customer_registrations_clean.
     """
     qrt_df = pd.DataFrame([])
-    tmp_row_idx = pd.Series([])
+    tmp_row_idx = pd.Series([], dtype='object')
     n_rows_qrt = 0
     n_rows_clean = 0
     n_rows_duplicates = 0
@@ -106,7 +108,7 @@ def run_qa_registration(debug=0):
         not_null_cols = ['timestamp', 'site', 'customeremail', 'familyname',
                          'givennames', 'customernumber', 'dateofbirth']
         for c in not_null_cols:
-            tmp_row_idx = clean_df[c].isna()
+            tmp_row_idx = clean_df[c].replace("", np.nan, regex=True).isna()
             if tmp_row_idx.sum() > 0:
                 n_rows_missing += tmp_row_idx.sum()
                 qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
@@ -138,7 +140,8 @@ def run_qa_registration(debug=0):
             qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
                                    ignore_index=True)
             clean_df = clean_df[~tmp_row_idx]
-        
+
+        n_rows_qrt = qrt_df.shape[0]
         qrt_df.to_sql('customer_registration_qrtn', conn, index=False, if_exists='append',
                        chunksize=200000)
         query = "SELECT * FROM customer_registration_clean;"
@@ -149,7 +152,6 @@ def run_qa_registration(debug=0):
             clean_df['audittime'] = pd.to_datetime('now')
             clean_df.to_sql('customer_registration_clean', conn, index=False, if_exists='append',
                        chunksize=200000)
-            n_rows_qrt = qrt_df.shape[0]
             n_rows_clean = clean_df.shape[0]
     logger.info(f'{n_rows_missing} rows with missing values.')
     logger.info(f'{n_rows_invalids} rows with invalid emails.')
@@ -169,7 +171,7 @@ def run_qa_games(debug=0):
     Good records are transformed and sent to games_purchase_clean.
     """
     qrt_df = pd.DataFrame([])
-    tmp_row_idx = pd.Series([])
+    tmp_row_idx = pd.Series([], dtype='object')
     n_rows_missing = 0
     n_rows_negative = 0
     logger.info('Running QA checks on games_purchase begin.')
@@ -182,7 +184,7 @@ def run_qa_games(debug=0):
         not_null_cols = ['timestamp', 'sitetid', 'customernumber', 'gamename',
                          'priceineur', 'feeineur', 'ticketexternalid']
         for c in not_null_cols:
-            tmp_row_idx = clean_df[c].isna()
+            tmp_row_idx = clean_df[c].replace("",np.nan,regex=True).isna()
             if tmp_row_idx.sum() > 0:
                 n_rows_missing += tmp_row_idx.sum()
                 qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
@@ -191,13 +193,14 @@ def run_qa_games(debug=0):
         # no negative records allowed
         not_neg_cols = ['priceineur', 'feeineur', 'winningsineur']
         for c in not_neg_cols:
-            tmp_row_idx = clean_df[c] < 0
+            tmp_row_idx = pd.to_numeric(clean_df[c], errors='coerce') < 0.0
             if tmp_row_idx.sum() > 0:
                 n_rows_negative += tmp_row_idx.sum()
                 qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
                                    ignore_index=True)
                 clean_df = clean_df[~tmp_row_idx]
         
+        n_rows_qrt = qrt_df.shape[0]
         qrt_df.to_sql('games_purchase_qrtn', conn, index=False, if_exists='append',
                        chunksize=200000)
         query = "SELECT * FROM games_purchase_clean;"
@@ -208,7 +211,6 @@ def run_qa_games(debug=0):
             clean_df['audittime'] = pd.to_datetime('now')
             clean_df.to_sql('games_purchase_clean', conn, index=False, if_exists='append',
                        chunksize=200000)
-            n_rows_qrt = qrt_df.shape[0]
             n_rows_clean = clean_df.shape[0]
     logger.info(f'{n_rows_missing} rows with missing values.')
     logger.info(f'{n_rows_negative} rows with negative values.')
@@ -228,7 +230,7 @@ def run_qa_lottery(debug=0):
     """
     qrt_df = pd.DataFrame([])
     clean_df = pd.DataFrame([])
-    tmp_row_idx = pd.Series([])
+    tmp_row_idx = pd.Series([], dtype='object')
     n_rows_missing = 0
     n_rows_negative = 0
     logger.info('Running QA checks on lottery_purchase begin.')
@@ -241,7 +243,7 @@ def run_qa_lottery(debug=0):
         not_null_cols = ['timestampunix', 'site', 'customernumber', 'amountincents',
                          'feeamountincents', 'game', 'orderidentifier', 'ticketid']
         for c in not_null_cols:
-            tmp_row_idx = clean_df[c].isna()
+            tmp_row_idx = clean_df[c].replace("",np.nan,regex=True).isna()
             if tmp_row_idx.sum() > 0:
                 n_rows_missing += tmp_row_idx.sum()
                 qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
@@ -251,13 +253,14 @@ def run_qa_lottery(debug=0):
         # no negative records allowed
         not_neg_cols = ['amountincents', 'feeamountincents', 'paymentamountincents']
         for c in not_neg_cols:
-            tmp_row_idx = clean_df[c] < 0
+            tmp_row_idx = pd.to_numeric(clean_df[c], errors='coerce') < 0.0
             if tmp_row_idx.sum() > 0:
                 n_rows_negative += tmp_row_idx.sum()
                 qrt_df = pd.concat([qrt_df, clean_df[tmp_row_idx]],
                                    ignore_index=True)
                 clean_df = clean_df[~tmp_row_idx]
         
+        n_rows_qrt = qrt_df.shape[0]
         qrt_df.to_sql('lottery_purchase_qrtn', conn, index=False, if_exists='append',
                        chunksize=200000)
         query = "SELECT * FROM lottery_purchase_clean;"
@@ -271,7 +274,6 @@ def run_qa_lottery(debug=0):
     logger.info(f'{n_rows_missing} rows with missing values.')
     logger.info(f'{n_rows_negative} rows with negative values.')
     logger.info('Running QA checks on lottery_purchase complete.')
-    n_rows_qrt = qrt_df.shape[0]
     n_rows_clean = clean_df.shape[0]
     del qrt_df
     del clean_df

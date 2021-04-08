@@ -5,6 +5,7 @@ import os
 TEST = os.environ.get('TEST', False)
 
 if TEST:
+    print("Using TEST settings.")
     db_staging_file = os.path.join('db', 'test_staging.db')
     db_production_file = os.path.join('db', 'test_production.db')
     report_folder = 'tests/reports'

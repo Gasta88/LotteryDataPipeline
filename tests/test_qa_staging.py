@@ -27,10 +27,10 @@ class QaStagingTestCase(unittest.TestCase):
         self.registration_content = [('2018-01-01 00:03:00.3136468','websiteF','riio@uqkry-.org','1988-12-13 16:57:40.7219400','Justin Dorsey','Rickey Villa','960 Nobel Boulevard','40 Fabien Boulevard','Michigan', '', 'Arkansas','63 Second St.','2018-01-01 00:03:00.3136468','477952'),
                                     ('2018-01-01 00:05:58.4257365','websiteE','snnd.kyjs@nzcly.lfebpe.net', '', 'Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
                                     ('2018-01-01 00:05:58.4257365','','', '','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
-                                    ('2018-01-01 00:05:58.4257365','websiteE','@nzcly.lfebpe.net', '','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
+                                    ('2018-01-01 00:05:58.4257365','websiteE','@nzcly.lfebpe.net', '1998-12-13 16:57:40.7219400','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
                                     ('2018-01-01 00:05:58.4257365','websiteE','sd.kyjs@nzcly.lfebpe.net', '','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
-                                    ('2018-01-01 00:05:58.4257365','websiteE','snnd.kyjs@nzcly.lfebpe.net', '','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
-                                    ('2018-01-01 00:05:58.4257365','websiteE','snnd.kyjs@nzcly.lfebpe.net', '','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
+                                    ('2018-01-01 00:05:58.4257365','websiteE','snnd.kyjs@nzcly.lfebpe.net', '1985-12-13 16:57:40.7219400','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
+                                    ('2018-01-01 00:05:58.4257365','websiteE','snnd.kyjs@nzcly.lfebpe.net', '1998-12-23 16:57:40.7219400','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135'),
                                     ('2018-01-01 00:05:58.4257365','websiteE','snnd.kyjs@nzcly.lfebpe.net', '','Lesley Carroll','Heidi Bray','353 White Clarendon Road','323 North First Way','Missouri','76737','Tennessee','46 Old Blvd.','2018-01-01 00:05:58.4257365','97135')]
         self.games_content = [('2018-11-13 06:30:52.1998217','websiteH','667124','eur','0716','gslsngoldenesieben','', 2.0, 0.4,'GOV7', 0.0),	
                             ('2019-01-17 00:55:44.1996456','websiteZ','666294','eur','0148','Nikolos','',3.0, 0.8,'HUC49302', 0.0),	
@@ -63,7 +63,7 @@ class QaStagingTestCase(unittest.TestCase):
             conn.commit()
         n_rows_qrt, n_rows_clean = qa_staging.run_qa_logins(debug=1)
         self.assertEqual(n_rows_qrt, 3)
-        self.assertEqual(n_rows_clean, 4)
+        self.assertEqual(n_rows_clean, 5)
 
     def test_run_qa_registration(self):
         """Test run_qa_registration method."""
@@ -72,8 +72,8 @@ class QaStagingTestCase(unittest.TestCase):
             cur.executemany("INSERT INTO customer_registration_stg VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", self.registration_content)
             conn.commit()
         n_rows_qrt, n_rows_clean = qa_staging.run_qa_registration(debug=1)
-        self.assertEqual(n_rows_qrt, 7)
-        self.assertEqual(n_rows_clean, 2)
+        self.assertEqual(n_rows_qrt, 8)
+        self.assertEqual(n_rows_clean, 0)
 
     def test_run_qa_games(self):
         """Testrun_qa_games method."""
@@ -92,8 +92,8 @@ class QaStagingTestCase(unittest.TestCase):
             cur.executemany("INSERT INTO lottery_purchase_stg VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", self.lottery_content)
             conn.commit()
         n_rows_qrt, n_rows_clean = qa_staging.run_qa_lottery(debug=1)
-        self.assertEqual(n_rows_qrt, 2)
-        self.assertEqual(n_rows_clean, 2)
+        self.assertEqual(n_rows_qrt, 3)
+        self.assertEqual(n_rows_clean, 1)
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner(verbose=3)
