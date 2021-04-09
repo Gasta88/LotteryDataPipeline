@@ -40,5 +40,5 @@ jobs:
       - name: Run tests
         env:
             TEST: True
-        run: python -m unittest tests/test_init_dbs.py
+        run: python -m unittest discover -v
         
