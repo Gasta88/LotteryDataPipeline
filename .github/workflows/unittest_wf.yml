@@ -40,7 +40,5 @@ jobs:
       - name: Run tests
         env:
             TEST: 1
-        run: |
-          ls -al
-          python -m unittest discover -v
+        run: python -m unittest discover -v
         
