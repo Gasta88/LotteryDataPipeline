@@ -24,3 +24,6 @@ inputfiles_headers = {
     'lotterygamespurchase': 'timestampunix;site;customernumber;currency;amountincents;feeamountincents;game;orderidentifier;paymentamountincents;ticketid;betindex;discount'
     }
 
+
+print(f'prod_db_file: {db_production_file}')
+print(f'staging_db_file: {db_staging_file}')
