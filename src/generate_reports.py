@@ -5,13 +5,15 @@
 import logging
 import sqlite3
 import pandas as pd
-from .settings import db_production_file
+from .settings import db_production_file, report_folder
 import os
 
 logger = logging.getLogger('file_logger')
-report_folder = 'reports'
 
-def generate_billing(by=None):
+if not os.path.exists(report_folder):
+    os.mkdir(report_folder)
+
+def generate_billing(by=None, debug=0):
     """Write billing report by a certain parameter."""
     if by is not None:
         df = pd.DataFrame([])
@@ -32,9 +34,11 @@ def generate_billing(by=None):
         logger.debug('Billing by {} complete.'.format(by))
     else:
         logger.debug('Missing parameter. No report.')
+    if debug == 1:
+        return file_name
     return
 
-def generate_active_customers(by=None):
+def generate_active_customers(by=None, debug=0):
     """Write active customers report by a certain parameter."""
     if by is not None:
         df = pd.DataFrame([])
@@ -56,9 +60,11 @@ def generate_active_customers(by=None):
         logger.debug('Active customers by {} complete.'.format(by))
     else:
         logger.debug('Missing parameter. No report.')
+    if debug == 1:
+        return file_name
     return
 
-def generate_avg_checkout():
+def generate_avg_checkout(debug=0):
     """Write average checkout report by yearly quarter."""
     df = pd.DataFrame([])
     with sqlite3.connect(db_production_file) as conn:
@@ -76,9 +82,11 @@ def generate_avg_checkout():
     df_pivot.fillna(0).to_csv(file_name)
     del df
     logger.info('Average customer basket complete.')
+    if debug == 1:
+        return file_name
     return
 
-def generate_monthly_diff():
+def generate_monthly_diff(debug=0):
     """Write monthly difference for each customer."""
     df = pd.DataFrame([])
     with sqlite3.connect(db_production_file) as conn:
@@ -95,5 +103,7 @@ def generate_monthly_diff():
     df_pivot.fillna(0).to_csv(file_name)
     del df
     logger.info('Monthly customer report complete.')
+    if debug == 1:
+        return file_name
     return
 

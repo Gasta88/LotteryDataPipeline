@@ -1,0 +1,44 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+        # Checkout the latest code from the repo
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        # Setup which version of Python to use
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+            # Semantic version range syntax or exact version of a Python version
+            python-version: '3.7'
+        # Display the Python version being used
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+        # Install the package using the setup.py
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+            path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+            key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+            restore-keys: |
+                  ${{ runner.os }}-pip-
+                  ${{ runner.os }}-
+      - name: Install package
+        run:  pip install -r requirements.txt
+      - name: Run tests
+        env:
+            TEST: 1
+        run: python -m unittest discover -v
+        

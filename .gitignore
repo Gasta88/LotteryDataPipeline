@@ -1,4 +1,7 @@
 data/input/*
-db/*
+db/*.db
 reports/*.csv
 reports/*.zip
+venv
+venv/*
+!.gitkeep
