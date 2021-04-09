@@ -6,7 +6,6 @@ from src.settings import db_production_file, schema_production_file, report_fold
 import unittest
 from src import generate_reports
 import sqlite3
-import shutil
 import os
 
 class GenerateReportsTestCase(unittest.TestCase):
@@ -20,10 +19,10 @@ class GenerateReportsTestCase(unittest.TestCase):
     
     def tearDown(self):
         """Clean up after test."""
-        shutil.rmtree(db_production_file)
+        os.remove(db_production_file)
         for file in os.listdir(report_folder):
             if file.endswith('.csv'):
-                shutil.rmtree(os.path.join(report_folder, file))
+                os.remove(os.path.join(report_folder, file))
 
         
     def test_generate_billing(self):
@@ -49,8 +48,8 @@ class GenerateReportsTestCase(unittest.TestCase):
 
     def test_generate_active_customers(self):
         """Test active customers report by a certain parameter."""
-        customer_content = [('565588','ivht871@yenqaf.com','1992-07-20 17:30:51.8694590','Darius Chase','Ruby Downs','24 Nobel Blvd.','','Iowa','2886','Vermont','193 Second Parkway'),
-                            ('566115','tizs57@sljwnl.org','964-09-15 07:12:16.8060203','Andres Avila','Naomi Mann','647 Rocky Oak Freeway','341 Milton Blvd.','Pennsylvania','32659','Iowa','160 Rocky Hague Street')]
+        customer_content = [('66115','ivht871@yenqaf.com','1992-07-20 17:30:51.8694590','Darius Chase','Ruby Downs','24 Nobel Blvd.','','Iowa','2886','Vermont','193 Second Parkway'),
+                            ('65588','tizs57@sljwnl.org','964-09-15 07:12:16.8060203','Andres Avila','Naomi Mann','647 Rocky Oak Freeway','341 Milton Blvd.','Pennsylvania','32659','Iowa','160 Rocky Hague Street')]
         login_content = [('66115','websiteZ','2020-01-29 09:17:53.3237453'),
                         ('65588','websiteZ','2019-04-11 18:36:59.4178461'),
                         ('65588','websiteZ','2019-04-27 05:01:48.0632458'),
@@ -70,13 +69,13 @@ class GenerateReportsTestCase(unittest.TestCase):
                         ('66115','websiteH','2018-12-17 13:06:21.3828122')]
         with sqlite3.connect(db_production_file) as conn:
             cur = conn.cursor()
-            cur.executemany("INSERT INTO customer_registration_stg VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+            cur.executemany("INSERT INTO customer VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
                             customer_content)
-            cur.executemany("INSERT INTO customer_logins_stg VALUES (?, ?, ?);",
+            cur.executemany("INSERT INTO login VALUES (?, ?, ?);",
                             login_content)
             conn.commit()
-        file_name = generate_reports.generate_billing(by='month', debug=1)
-        self.assertEqual(file_name, 'tests/reports/active_customers_by_month.csv')
+        file_name = generate_reports.generate_active_customers(by='login_month', debug=1)
+        self.assertEqual(file_name, 'tests/reports/active_customers_by_login_month.csv')
         self.assertTrue(os.stat(file_name).st_size > 0)
         
     def test_generate_avg_checkout(self):
@@ -89,7 +88,7 @@ class GenerateReportsTestCase(unittest.TestCase):
                           ('83972ZIN9206132175','32','2','eur','1.0','0.1','1')]
         with sqlite3.connect(db_production_file) as conn:
             cur = conn.cursor()
-            cur.executemany("INSERT INTO customer_registration_stg VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+            cur.executemany("INSERT INTO customer VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
                             customer_content)
             cur.executemany("INSERT INTO ticket VALUES (?, ?, ?, ?, ?, ?, ?);",
                             ticket_content)
@@ -110,7 +109,7 @@ class GenerateReportsTestCase(unittest.TestCase):
                           ('83972ZIN9206132175','32','2','eur','1.0','0.1','1')]
         with sqlite3.connect(db_production_file) as conn:
             cur = conn.cursor()
-            cur.executemany("INSERT INTO customer_registration_stg VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+            cur.executemany("INSERT INTO customer VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
                             customer_content)
             cur.executemany("INSERT INTO ticket VALUES (?, ?, ?, ?, ?, ?, ?);",
                             ticket_content)
