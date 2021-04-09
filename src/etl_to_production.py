@@ -18,9 +18,9 @@ def prepare_discount_table():
         prod_df = pd.read_sql_query(query, con=conn_prod)
         query = "SELECT * FROM discount_vw;"
         staging_df = pd.read_sql_query(query, con=conn_stg)
-        category_series = pd.Series([])
-        value_series = pd.Series([])
-        type_series = pd.Series([])
+        category_series = pd.Series([], dtype='object')
+        value_series = pd.Series([], dtype='object')
+        type_series = pd.Series([], dtype='object')
         for i, row in staging_df.iterrows():
             category_series[i] = row[1].replace('{','').replace('}','').replace('"','').replace(',type','').split(':')[0]
             value_series[i] = float(row[1].replace('{','').replace('}','').replace('"','').replace(',type','').split(':')[1])
